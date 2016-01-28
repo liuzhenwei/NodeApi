@@ -1,0 +1,24 @@
+{
+  "name": "NodeApi",
+  "version": "0.0.1",
+  "description": "NodeApi",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://liuzhenwei@github.com/liuzhenwei/NodeApi.git"
+  },
+  "keywords": [
+    "node",
+    "api"
+  ],
+  "author": "liuzhenwei",
+  "license": "MIT",
+  "dependencies": {
+    "connect": "latest",
+    "morgan": "latest",
+    "body-parser": "latest",
+    "request": "latest"
+  }
+}
