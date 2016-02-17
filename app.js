@@ -10,8 +10,13 @@ const ApiDomain = 'http://10.200.246.120';
 var app = connect();
 
 app.use(logger('dev'));
-app.use(bodyParser.urlencoded({extended: false}));
+app.use('/getAll', bodyParser.urlencoded({extended: false}));
 app.use(function (req, res) {
+	if( !(req.body && req.body.data) ){
+		res.end(JSON.stringify({"errorCode": 1, "errorDesc": "route error"}));
+		return;
+	}
+
 	var postData = JSON.parse(req.body.data);
 
 	var promisesReq = [ApiDomain + '/api/users/' + postData.user, ApiDomain + '/api/products/' + postData.product];
