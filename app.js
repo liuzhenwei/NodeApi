@@ -5,23 +5,11 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var httpReq = require('request');
 
-const ApiDomain = 'http://10.200.246.120';
+const ApiDomain = 'http://liuzhenwei.com.cn';
 
-var app = connect();
 
-app.use(logger('dev'));
-app.use('/getAll', bodyParser.urlencoded({extended: false}));
-app.use(function (req, res) {
-	if( !(req.body && req.body.data) ){
-		res.end(JSON.stringify({"errorCode": 1, "errorDesc": "route error"}));
-		return;
-	}
-
-	var postData = JSON.parse(req.body.data);
-
-	var promisesReq = [ApiDomain + '/api/users/' + postData.user, ApiDomain + '/api/products/' + postData.product];
-
-	promisesReq = promisesReq.map(function(url){
+function loadApi(arrApi, res){
+	var promisesReq = arrApi.map(function(url){
 		return new Promise(function(resolve, reject){
 			httpReq.get(url, {timeout: 3000}, function(error, response, body){
 				if (!error && response.statusCode == 200) {
@@ -48,19 +36,25 @@ app.use(function (req, res) {
 	}).catch(function(reason){
 		res.end(JSON.stringify({"errorCode": -1, "errorDesc": reason}));
 	});
+}
 
-	// 基础写法
-	// http.get(ApiDomain + '/api/users/' + postData.user, function(resStream){
-	// 	if (resStream.statusCode == 200) {
-	// 		var ret = '';
-	// 		resStream.on('data', (data) => {
-	// 			console.log(data);
-	// 			ret += data;
-	// 		});
-	// 		resStream.on('end', () => {
-	// 			res.end(ret);
-	// 		});
-	// 	}
-	// });
+
+var app = connect();
+
+app.use(logger('dev'));
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.use('/getUser', function(req, res, next){
+	var postData = JSON.parse(req.body.data);
+	loadApi([ApiDomain + '/api/users/' + postData.user], res);
+});
+
+app.use('/getAll', function(req, res, next){
+	var postData = JSON.parse(req.body.data);
+	loadApi([ApiDomain + '/api/users/' + postData.user, ApiDomain + '/api/products/' + postData.product], res);
+});
+
+app.use(function (req, res) {
+	res.end(JSON.stringify({"errorCode": 9, "errorDesc": "route error"}));
 });
 app.listen(3000);
